@@ -1,0 +1,42 @@
+{
+  "agents": {
+    "comercial": {
+      "domain": "Vendas / Comercial",
+      "description": "Consultas sobre clientes, pedidos, metas, vendedores, faturamento, ticket médio, ranking",
+      "keywords": ["venda", "cliente", "pedido", "meta", "comissão", "vendedor", "faturamento", "ticket médio", "ranking", "comercial"],
+      "tables": ["cliente", "pedido", "item_pedido", "meta_comercial"],
+      "score_weight": 1.0
+    },
+    "financeiro": {
+      "domain": "Financeiro",
+      "description": "Consultas sobre contas a receber/pagar, boletos, PIX, fluxo de caixa, lançamentos, baixas",
+      "keywords": ["conta", "receber", "pagar", "boleto", "pix", "financeiro", "caixa", "fluxo", "despesa", "receita", "lançamento", "baixa", "vencimento"],
+      "tables": ["conta_receber", "conta_pagar", "lancamento", "boleto", "pix_cobranca", "baixa"],
+      "score_weight": 1.0
+    },
+    "frota": {
+      "domain": "Frota",
+      "description": "Consultas sobre veículos, motoristas, KM, troca de óleo, pneus, seguros, manutenções",
+      "keywords": ["veículo", "frota", "motorista", "km", "quilometragem", "óleo", "pneu", "seguro", "manutenção", "caminhão", "placa"],
+      "tables": ["veiculo", "motorista", "veiculo_km_registro", "veiculo_troca_oleo", "veiculo_pneu", "veiculo_seguro", "veiculo_historico"],
+      "score_weight": 1.0
+    },
+    "estoque": {
+      "domain": "Estoque / Produtos",
+      "description": "Consultas sobre produtos, famílias, depósitos, saldos, lotes, movimentações, inventário",
+      "keywords": ["estoque", "produto", "depósito", "lote", "inventário", "movimentação", "saldo", "família", "código", "validade"],
+      "tables": ["produto", "familia_produto", "deposito", "estoque", "movimentacao", "inventario", "lote"],
+      "score_weight": 1.0
+    },
+    "administrativo": {
+      "domain": "Administrativo / RH",
+      "description": "Consultas sobre funcionários, usuários, fornecedores, pedidos de compra, endereços, auditoria",
+      "keywords": ["funcionário", "usuário", "fornecedor", "compra", "pedido de compra", "endereço", "auditoria", "documento", "admissão", "rh"],
+      "tables": ["funcionario", "usuario", "fornecedor", "pedido_compra", "item_pedido_compra", "endereco", "auditoria", "documento"],
+      "score_weight": 1.0
+    }
+  },
+  "routing_strategy": "best_score",
+  "min_score_threshold": 0.3,
+  "fallback_message": "Não consegui identificar o domínio da sua pergunta. Os domínios disponíveis são: Comercial, Financeiro, Frota, Estoque e Administrativo. Tente refrasear sua pergunta."
+}

@@ -1,0 +1,22 @@
+# Development overrides for docker-compose.yml
+# Usage: docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d
+
+services:
+  api:
+    build:
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ..:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DEBUG: "true"
+
+  nginx:
+    build:
+      dockerfile: docker/Dockerfile.web.dev
+    volumes:
+      - ../web:/app/web
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development

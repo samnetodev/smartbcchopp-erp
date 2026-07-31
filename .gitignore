@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+*.deb
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/data/
+docker/postgres/
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# Logs
+*.log
+logs/
+
+# Alembic
+database/migrations/versions/*.pyc
+
+# Uploads
+uploads/
+media/
+
+# Node
+node_modules/
+web/dist/
+
+# Deploy configs
+.deploy/
+
+# Rollback backups
+rollback/
+
+# Docker
+docker/backup/backups/
