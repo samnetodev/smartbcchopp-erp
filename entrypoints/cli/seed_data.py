@@ -17,8 +17,9 @@ from sqlalchemy import select
 os.environ.setdefault("SECRET_KEY", "dev")
 os.environ.setdefault("JWT_SECRET_KEY", "dev")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
-os.environ["DATABASE_URL"] = (
-    "postgresql+asyncpg://smartbcchopp:MMFrduU2BUxjelhxXA44bg@localhost:55432/smartbcchopp"
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+asyncpg://smartbcchopp:MMFrduU2BUxjelhxXA44bg@localhost:55432/smartbcchopp",
 )
 
 from config.security import hash_password
@@ -217,18 +218,17 @@ async def seed() -> None:
             clientes.append(c)
 
             if status == ClienteStatus.ATIVO:
-                for m in range(1, 4):
-                    mes = HOJE.month - m
+                for k in range(0, 6):
+                    mes = HOJE.month - k
                     ano = HOJE.year
                     if mes <= 0:
                         mes += 12
                         ano -= 1
-                    data = date(ano, mes, 20)
-                    total = Decimal(
-                        str(300 * (len(clientes) + 1) + m * 50)
-                    )
+                    dia = HOJE.day if k == 0 else 15
+                    data = date(ano, mes, dia)
+                    total = Decimal(str(280 * (len(clientes) + 1) + k * 80 + 100))
                     ped = PedidoModel(
-                        numero=f"PED-{len(clientes)}-{m}",
+                        numero=f"PED-{len(clientes)}-{k + 1}",
                         cliente_id=c.id,
                         data_emissao=data,
                         subtotal=total,
@@ -237,21 +237,22 @@ async def seed() -> None:
                     )
                     session.add(ped)
                     await session.flush()
-                    qtd = m + 2
-                    vu = prods[m % len(prods)].preco_venda
+                    qtd = k + 2
+                    pidx = (len(clientes) + k) % len(prods)
+                    vu = prods[pidx].preco_venda
                     session.add(ItemPedidoModel(
                         pedido_id=ped.id,
-                        produto_id=prods[m % len(prods)].id,
+                        produto_id=prods[pidx].id,
                         quantidade=qtd,
                         preco_unitario=vu,
                         subtotal=vu * qtd,
-                        ordem=m,
+                        ordem=k,
                     ))
                     session.add(LancamentoModel(
                         tipo=LancamentoTipo.ENTRADA,
                         valor=total,
                         categoria="receita",
-                        descricao=f"Pedido #{len(clientes)}-{m}",
+                        descricao=f"Pedido #{len(clientes)}-{k + 1}",
                         data=data,
                     ))
 
@@ -345,6 +346,28 @@ async def seed() -> None:
             data_vencimento=HOJE - timedelta(days=1),
             categoria="estoque",
         ))
+
+        # ── Despesas (lançamentos de saída) ──
+        despesas = [
+            ("combustível", Decimal("1850.00")),
+            ("manutenção frota", Decimal("980.00")),
+            ("energia elétrica", Decimal("620.00")),
+            ("salários", Decimal("24000.00")),
+            ("material de escritório", Decimal("310.00")),
+        ]
+        for i, (cat, valor) in enumerate(despesas):
+            mes = HOJE.month - (i % 3)
+            ano = HOJE.year
+            if mes <= 0:
+                mes += 12
+                ano -= 1
+            session.add(LancamentoModel(
+                tipo=LancamentoTipo.SAIDA,
+                valor=valor,
+                categoria=cat,
+                descricao=f"Despesa {cat}",
+                data=date(ano, mes, 5),
+            ))
 
         # ── Alertas ──
         alertas = [

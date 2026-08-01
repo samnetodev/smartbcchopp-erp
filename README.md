@@ -1,26 +1,33 @@
 # SmartBcChopp ERP
 
-**ERP Inteligente para Distribuidora de Chope, Carvão e Transporte**
+**ERP inteligente para distribuidoras de chope, carvão e transporte** — dashboard web completo com automações agendadas, atendimento via WhatsApp com IA, frota, financeiro, estoque e API REST documentada.
 
-Sistema completo de gestão empresarial com backend em FastAPI, frontend React + TypeScript, automações inteligentes, integração WhatsApp com IA, e infraestrutura Docker pronta para produção.
+<div align="center">
+
+[![CI](https://img.shields.io/github/actions/workflow/status/samnetodev/smartbcchopp-erp/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/samnetodev/smartbcchopp-erp/actions)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](#)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](#)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](#)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+**🔗 [Demo ao vivo](https://URL_DEMO.onrender.com)** · **🛠 [API Docs (Swagger)](https://URL_DEMO.onrender.com/docs)** · Credenciais de acesso: **`admin` / `admin123`**
+
+</div>
 
 ---
 
-## Índice
+## 📸 Screenshots
 
-- [Arquitetura](#arquitetura)
-- [Stack Tecnológica](#stack-tecnológica)
-- [Funcionalidades](#funcionalidades)
-- [Quick Start (Desenvolvimento)](#quick-start-desenvolvimento)
-- [Deploy em Produção](#deploy-em-produção)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Comandos](#comandos)
-- [API Documentation](#api-documentation)
-- [CI/CD](#cicd)
-- [Backup e Restore](#backup-e-restore)
-- [Monitoramento](#monitoramento)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
-- [Contribuição](#contribuição)
+![Dashboard do ERP](docs/screenshots/dashboard.png)
+
+| | |
+|---|---|
+| <img src="docs/screenshots/estoque.png" alt="Estoque" width="440"> | <img src="docs/screenshots/financeiro.png" alt="Financeiro" width="440"> |
+| <img src="docs/screenshots/fornecedores.png" alt="Fornecedores" width="440"> | <img src="docs/screenshots/swagger.png" alt="API Docs" width="440"> |
+
+> Veja a [galeria completa](docs/screenshots/) com todas as telas.
 
 ---
 
@@ -53,6 +60,19 @@ Sistema completo de gestão empresarial com backend em FastAPI, frontend React +
 - **DI via dependency-injector**: Container centralizado em `config/container.py`.
 - **Automações**: 10 jobs agendados via APScheduler com arquitetura extensível (decorator `@register_job`).
 - **WhatsApp + IA**: Agentes de IA (Orquestrador + 5 especialistas) processam intenções via webhook.
+
+---
+
+## ✨ Destaques
+
+- **Clean Architecture + DDD** — `core/` com zero dependências externas; domínio em dataclasses puras, testável isoladamente.
+- **Result Monad em todos os use cases** — `Success[T] | Failure[E]`, sem exceções de negócio espalhadas pelo código.
+- **24+ entidades modeladas** — clientes, pedidos, estoque multi-depósito, frota (óleo, seguros, multas), chopeiras com manutenção, financeiro (boletos/PIX), fornecedores.
+- **10 automações agendadas** — APScheduler com registry extensível (estoque baixo, multas, seguros, boletos, manutenção de chopeiras, clientes inativos...).
+- **Atendimento via WhatsApp com IA** — agentes (orquestrador + especialistas) interpretam intenções e respondem consultas/pedidos.
+- **Mypy `--strict` + Ruff limpos** em 202 arquivos — qualidade verificada por CI.
+- **85+ testes** com PostgreSQL e Redis em pipeline GitHub Actions.
+- **Deploy pronto** — Docker multi-stage, Nginx com SSL/rate-limit, backups automáticos e update zero-downtime.
 
 ---
 
@@ -112,8 +132,8 @@ Sistema completo de gestão empresarial com backend em FastAPI, frontend React +
 ### 1. Clone e configure
 
 ```bash
-git clone https://github.com/yourorg/smartbcchopp.git
-cd "dashboard -smartbcchopp"
+git clone https://github.com/samnetodev/smartbcchopp-erp.git
+cd smartbcchopp-erp
 cp .env.example .env
 # Edite .env com suas configurações
 ```
@@ -140,6 +160,14 @@ docker compose -f docker/docker-compose.yml up -d postgres redis
 
 # Criar tabelas
 make migrate
+```
+
+### 5. Dados de demonstração (opcional)
+
+```bash
+python -m entrypoints.cli.seed_data
+# Cria usuário admin / admin123 + 8 clientes, 10 produtos,
+# 10 chopeiras, 6 veículos, 12 alertas e histórico financeiro
 ```
 
 Acesse: http://localhost:5173 (frontend) | http://localhost:8000/docs (API docs)
@@ -347,9 +375,14 @@ O pipeline GitHub Actions em `.github/workflows/ci.yml`:
 | Stage | Descrição |
 |-------|-----------|
 | **lint** | Ruff + MyPy |
-| **test** | Pytest (com PostgreSQL e Redis via serviços Docker) |
-| **build** | Docker build + push para GitHub Container Registry |
-| **deploy** | Deploy automático via SSH para produção (branch `main`) |
+| **test** | Pytest (com PostgreSQL e Redis via serviços Docker) + cobertura |
+| **frontend** | `npm ci` + TypeScript `tsc` + build de produção |
+| **build** | Docker build + push para GitHub Container Registry (branch `main`) |
+| **deploy** | Deploy automático via SSH para produção (apenas com secrets configurados) |
+
+Badge de CI:
+
+[![CI](https://img.shields.io/github/actions/workflow/status/samnetodev/smartbcchopp-erp/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/samnetodev/smartbcchopp-erp/actions)
 
 ### Secrets necessários no GitHub
 

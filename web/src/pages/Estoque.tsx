@@ -317,7 +317,7 @@ export default function Estoque() {
                       <Td>{p.unidade_medida}</Td>
                       <Td>{p.preco_custo ? fmtBRL(p.preco_custo) : '—'}</Td>
                       <Td>{fmtBRL(p.preco_venda)}</Td>
-                      <Td>{p.estoque_minimo}</Td>
+                      <Td>{Number(p.estoque_minimo).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</Td>
                       <Td><Badge tone={productStatusTone[String(p.ativo)]}>{p.ativo ? 'ativo' : 'inativo'}</Badge></Td>
                       <Td>
                         <div className="flex justify-end gap-1">
