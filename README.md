@@ -374,11 +374,10 @@ O pipeline GitHub Actions em `.github/workflows/ci.yml`:
 
 | Stage | Descrição |
 |-------|-----------|
-| **lint** | Ruff + MyPy |
+| **lint** | Ruff + MyPy (`--strict`) |
 | **test** | Pytest (com PostgreSQL e Redis via serviços Docker) + cobertura |
 | **frontend** | `npm ci` + TypeScript `tsc` + build de produção |
 | **build** | Docker build + push para GitHub Container Registry (branch `main`) |
-| **deploy** | Deploy automático via SSH para produção (apenas com secrets configurados) |
 
 Badge de CI:
 

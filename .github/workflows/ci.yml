@@ -172,28 +172,3 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.DEPLOY_HOST != ''
-    environment: production
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          script: |
-            cd /opt/smartbcchopp
-            git fetch origin
-            git reset --hard origin/main
-            docker compose -f docker/docker-compose.yml pull
-            docker compose -f docker/docker-compose.yml up -d --no-deps --build api nginx
-            docker compose -f docker/docker-compose.yml exec -T api alembic upgrade head
-            docker image prune -f
