@@ -66,6 +66,9 @@ async def seed() -> None:
         )
         if existing.scalar_one_or_none():
             print("[OK] Admin já existe")
+            if "--if-empty" in sys.argv:
+                print("[SKIP] Seed ignorado: dados já existem (--if-empty)")
+                return
         else:
             session.add(UsuarioModel(
                 username="admin",

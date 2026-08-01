@@ -38,6 +38,17 @@ class Settings(BaseSettings):
     NFE_API_KEY: str = ""
     PAGARME_API_KEY: str = ""
 
+    def model_post_init(self, __context: object) -> None:
+        self._normalize_database_urls()
+
+    def _normalize_database_urls(self) -> None:
+        if self.DATABASE_URL.startswith("postgres://"):
+            self.DATABASE_URL = "postgresql://" + self.DATABASE_URL[len("postgres://"):]
+        if self.DATABASE_SYNC_URL.startswith("postgres://"):
+            self.DATABASE_SYNC_URL = "postgresql://" + self.DATABASE_SYNC_URL[len("postgres://"):]
+        if "+" not in self.DATABASE_URL.split("://", 1)[0]:
+            self.DATABASE_URL = self.DATABASE_URL.replace("://", "+asyncpg://", 1)
+
     @property
     def cors_origins_list(self) -> list[str]:
         return cast("list[str]", json.loads(self.CORS_ORIGINS))

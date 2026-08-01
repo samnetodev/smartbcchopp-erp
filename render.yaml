@@ -1,0 +1,55 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: conectar o repositório no Render e usar "Blueprint" (render.yaml).
+
+databases:
+  - name: smartbcchopp-db
+    plan: free
+    databaseName: smartbcchopp
+
+services:
+  # ── API (FastAPI + uvicorn) ──────────────────────────────────────────
+  - type: web
+    name: smartbcchopp-api
+    runtime: docker
+    dockerfilePath: ./docker/Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartbcchopp-db
+          property: connectionString
+      - key: DATABASE_SYNC_URL
+        fromDatabase:
+          name: smartbcchopp-db
+          property: connectionString
+      - key: REDIS_URL
+        value: redis://localhost:6379/0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: '["*"]'
+      - key: DEBUG
+        value: "false"
+      - key: DEMO_SEED
+        value: "true"
+
+  # ── Web (React build + Nginx) ────────────────────────────────────────
+  - type: web
+    name: smartbcchopp-web
+    runtime: docker
+    dockerfilePath: ./docker/Dockerfile.web
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: API_HOST
+        fromService:
+          type: web
+          name: smartbcchopp-api
+          property: host
+      - key: API_PORT
+        value: "8000"
+      - key: SERVER_NAME
+        value: smartbcchopp-web.onrender.com
